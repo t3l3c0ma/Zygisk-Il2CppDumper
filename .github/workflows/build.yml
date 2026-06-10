@@ -18,10 +18,15 @@ jobs:
     - uses: actions/setup-java@v4
       with:
         distribution: temurin
-        # CAMBIATO DA 25 A 17 per compatibilità con Gradle 7.3.3
         java-version: 17
         cache: gradle
         
+    - name: Install Android CMake 3.22.1
+      run: |
+        # Accetta le licenze e installa la versione esatta di CMake richiesta dal progetto
+        yes | ${ANDROID_HOME}/cmdline-tools/latest/bin/sdkmanager --licenses
+        ${ANDROID_HOME}/cmdline-tools/latest/bin/sdkmanager "cmake;3.22.1"
+
     - name: Build Module
       run: |
         chmod +x ./gradlew
