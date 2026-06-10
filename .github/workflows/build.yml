@@ -1,34 +1,38 @@
 name: Build
 on:
   workflow_dispatch:
-      inputs:
-        package_name:
-          description: "Package name of the game:"
-          required: true
+    inputs:
+      package_name:
+        description: "Package name of the game:"
+        required: true
 
 jobs:
   build:
     runs-on: ubuntu-latest
+    # Forza l'uso di Node 24 per nascondere il warning di GitHub
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: 'true'
+      
     steps:
-    # 1. Aggiornato a v4 per supportare Node.js 24
     - uses: actions/checkout@v4
     
-    # 2. Aggiornato a v4 per supportare Node.js 24
     - uses: actions/setup-java@v4
       with:
         distribution: temurin
         java-version: 25
         cache: gradle
         
-    - run: |
+    - name: Build Module
+      run: |
         chmod +x ./gradlew
+        # Modifica i file di configurazione con il package name inserito
         sed -i 's/moduleDescription = "/moduleDescription = "(${{ github.event.inputs.package_name }}) /g' module.gradle
         sed -i "s/com.game.packagename/${{ github.event.inputs.package_name }}/g" module/src/main/cpp/game.h
+        # Avvia la compilazione
         ./gradlew :module:assembleRelease
         
-    - uses: actions/upload-artifact@v4
+    - name: Upload Artifact
+      uses: actions/upload-artifact@v4
       with:
         name: zygisk-il2cppdumper
         path: out/magisk_module_release/
-        
-    - uses: actions/setup-node@v4
