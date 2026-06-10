@@ -9,7 +9,6 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    # Forza l'uso di Node 24 per nascondere il warning di GitHub
     env:
       FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: 'true'
       
@@ -19,7 +18,8 @@ jobs:
     - uses: actions/setup-java@v4
       with:
         distribution: temurin
-        java-version: 25
+        # CAMBIATO DA 25 A 17 per compatibilità con Gradle 7.3.3
+        java-version: 17
         cache: gradle
         
     - name: Build Module
